@@ -19,12 +19,14 @@ type Config struct {
 
 func main() {
 	loadConfiguration()
+
 	dg, err := discordgo.New("Bot " + config.Token)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
 		os.Exit(1)
 		return
 	}
+
 	dg.AddHandler(messageCreate)
 	err = dg.Open()
 	if err != nil {
@@ -34,21 +36,25 @@ func main() {
 	}
 
 	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM,
+		os.Interrupt, os.Kill)
 	<-sc
 
 	dg.Close()
 }
+
 func loadConfiguration() {
 	jsonFile, err := os.Open("configuration.json")
+	defer jsonFile.Close()
 	if err != nil {
 		panic(err)
 	}
-	defer jsonFile.Close()
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	json.Unmarshal(byteValue, &config)
 }
+
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
