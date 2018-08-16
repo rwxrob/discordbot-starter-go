@@ -15,6 +15,7 @@ var config Config
 
 type Config struct {
 	Token string `json:"token"`
+	Some  string
 }
 
 func main() {
